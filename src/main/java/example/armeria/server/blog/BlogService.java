@@ -1,6 +1,8 @@
 package example.armeria.server.blog;
 
 import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
 import com.linecorp.armeria.server.annotation.Post;
 import com.linecorp.armeria.server.annotation.RequestConverter;
 
@@ -14,6 +16,12 @@ public final class BlogService {
     @RequestConverter(BlogPostRequestConverter.class)
     public HttpResponse createBlogPost(BlogPost blogPost) {
         blogPosts.put(blogPost.getId(), blogPost);
+        return HttpResponse.ofJson(blogPost);
+    }
+
+    @Get("/blogs/:id")
+    public HttpResponse getBlogPost(@Param int id) {
+        BlogPost blogPost = blogPosts.get(id);
         return HttpResponse.ofJson(blogPost);
     }
 }
