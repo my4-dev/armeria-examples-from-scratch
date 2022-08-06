@@ -11,29 +11,29 @@ import java.lang.reflect.ParameterizedType;
 import java.util.concurrent.atomic.AtomicInteger;
 
 final class BlogPostRequestConverter implements RequestConverterFunction {
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private AtomicInteger idGenerator = new AtomicInteger();
+  private static final ObjectMapper mapper = new ObjectMapper();
+  private AtomicInteger idGenerator = new AtomicInteger();
 
-    static String stringValue(JsonNode jsonNode, String field) {
-        JsonNode value = jsonNode.get(field);
-        if (value == null) {
-            throw new IllegalArgumentException(field + " is missing!");
-        }
-        return value.textValue();
+  static String stringValue(JsonNode jsonNode, String field) {
+    JsonNode value = jsonNode.get(field);
+    if (value == null) {
+      throw new IllegalArgumentException(field + " is missing!");
     }
+    return value.textValue();
+  }
 
-    @Override
-    public Object convertRequest(ServiceRequestContext ctx,
-                                 AggregatedHttpRequest request, Class<?> expectedResultType,
-                                 @Nullable ParameterizedType expectedParameterizedResultType)
-        throws Exception {
-        if (expectedResultType == BlogPost.class) {
-            JsonNode jsonNode = mapper.readTree(request.contentUtf8());
-            int id = idGenerator.getAndIncrement();
-            String title = stringValue(jsonNode, "title");
-            String content = stringValue(jsonNode, "content");
-            return new BlogPost(id, title, content);    // Create an instance of BlogPost
-        }
-        return RequestConverterFunction.fallthrough();
+  @Override
+  public Object convertRequest(ServiceRequestContext ctx,
+                               AggregatedHttpRequest request, Class<?> expectedResultType,
+                               @Nullable ParameterizedType expectedParameterizedResultType)
+          throws Exception {
+    if (expectedResultType == BlogPost.class) {
+      JsonNode jsonNode = mapper.readTree(request.contentUtf8());
+      int id = idGenerator.getAndIncrement();
+      String title = stringValue(jsonNode, "title");
+      String content = stringValue(jsonNode, "content");
+      return new BlogPost(id, title, content);    // Create an instance of BlogPost
     }
+    return RequestConverterFunction.fallthrough();
+  }
 }
