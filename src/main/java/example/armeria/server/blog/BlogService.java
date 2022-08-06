@@ -34,4 +34,15 @@ public final class BlogService {
     blogPosts.put(id, newBlogPost);
     return HttpResponse.ofJson(newBlogPost);
   }
+
+  @Blocking
+  @Delete("/blogs/:id")
+  @ExceptionHandler(BadRequestExceptionHandler.class)
+  public HttpResponse deleteBlogPost(@Param int id) {
+    BlogPost removed = blogPosts.remove(id);
+    if (removed == null) {
+      throw new IllegalArgumentException("The blog post does not exists. id: " + id);
+    }
+    return HttpResponse.of(HttpStatus.NO_CONTENT);
+  }
 }
